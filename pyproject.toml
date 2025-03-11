@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "cgt-project"
+version = "0.1.0"
+description = "Computational game theory Project"
+authors = ["Niclas Müller-Hof <n.j.muller-hof@student.rug.nl>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+matplotlib = "^3.10.1"
+numpy = "^2.2.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
