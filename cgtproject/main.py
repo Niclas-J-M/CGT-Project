@@ -1,47 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from qlearning import QLearningAgent
 
-class QLearningAgent:
-    def __init__(self, n_actions, tau=0.1, init_Q=0.0):
-        """
-        n_actions: number of available actions
-        tau: temperature parameter for Boltzmann (softmax) action selection
-        init_Q: initial Q-value for each action
-        """
-        self.n_actions = n_actions
-        self.tau = tau
-        self.Q = np.full(n_actions, init_Q, dtype=float)
-    
-    def get_policy(self):
-        """
-        Compute the Boltzmann (softmax) distribution over actions using current Q-values,
-        with normalization to prevent overflow.
-        """
-        # Shift Q-values by subtracting the maximum Q-value for numerical stability.
-        shifted_Q = self.Q - np.max(self.Q)
-        exp_vals = np.exp(shifted_Q / self.tau)
-        return exp_vals / np.sum(exp_vals)
-    
-    def select_action(self):
-        """
-        Select an action based on the softmax probabilities.
-        Returns the selected action and the probability distribution.
-        """
-        policy = self.get_policy()
-        action = np.random.choice(self.n_actions, p=policy)
-        return action, policy
-    
-    def update(self, action, reward, lr, policy):
-        """
-        Update the Q-value for the selected action.
-        The update rule is:
-            Q(a) = Q(a) + lr * (reward - Q(a)) / π(a)
-        where π(a) is the probability of the chosen action.
-        """
-        # To avoid division by zero, you might include a small epsilon if needed.
-        self.Q[action] += lr * (reward - self.Q[action]) / policy[action]
 
-def simulate_game(num_iters=50000, lr0=0.1, tau=0.1):
+def simulate_game(num_iters=500000, tau=0.1):
     """
     Simulate the repeated play of rock–paper–scissors between two Q-learning agents.
     
@@ -70,7 +32,8 @@ def simulate_game(num_iters=50000, lr0=0.1, tau=0.1):
     
     for n in range(1, num_iters + 1):
         # Example learning rate schedule: decays slowly over time.
-        lr = lr0 / (1 + n / 1000)
+        lr = (n + 100) ** (-0.9)
+
         
         # Each agent selects an action and obtains its current policy distribution
         action1, policy1 = agent1.select_action()
@@ -87,6 +50,13 @@ def simulate_game(num_iters=50000, lr0=0.1, tau=0.1):
         # Record the policy probabilities for later analysis.
         history_agent1.append(agent1.get_policy().copy())
         history_agent2.append(agent2.get_policy().copy())
+
+        # Print probabilities every 1000 iterations for debugging
+        if n % 100000 == 0:
+            print(f"Iteration {n}: π^1(R)={policy1[0]:.3f}, π^1(S)={policy1[2]:.3f}")
+
+    # Convert history to NumPy arrays for plotting
+    #history_agent1 = np.array(history_agent1)
     
     # Convert history to NumPy arrays for plotting
     history_agent1 = np.array(history_agent1)
@@ -114,5 +84,21 @@ def simulate_game(num_iters=50000, lr0=0.1, tau=0.1):
     plt.legend()
     plt.show()
 
+    # Scatter plot π^1(S) (y-axis) vs π^1(R) (x-axis)
+    # plt.figure(figsize=(10, 6))
+    # plt.scatter(history_agent1[:, 0], history_agent1[:, 2], alpha=0.3, s=1)
+    # plt.xlabel(r'$\pi^1(R)$')
+    # plt.ylabel(r'$\pi^1(S)$')
+    # plt.title('Strategy Evolution of Player 1 in Rock-Paper-Scissors')
+    # plt.show()
+
+    # # Plot omitting first 10,000 iterations
+    # plt.figure(figsize=(10, 6))
+    # plt.scatter(history_agent1[10000:, 0], history_agent1[10000:, 2], alpha=0.3, s=1)
+    # plt.xlabel(r'$\pi^1(R)$')
+    # plt.ylabel(r'$\pi^1(S)$')
+    # plt.title('Strategy Evolution (Ignoring First 10,000 Iterations)')
+    # plt.show()
+
 if __name__ == "__main__":
-    simulate_game(num_iters=50000, lr0=0.1, tau=0.1)
+    simulate_game(num_iters=500000, tau=0.1)
