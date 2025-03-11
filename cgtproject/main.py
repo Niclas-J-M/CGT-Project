@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from qlearning import QLearningAgent
+from plots import RPSPlotting
 
 
 def simulate_game(num_iters=500000, tau=0.1):
@@ -26,16 +27,21 @@ def simulate_game(num_iters=500000, tau=0.1):
     agent1 = QLearningAgent(n_actions=3, tau=tau)
     agent2 = QLearningAgent(n_actions=3, tau=tau)
     
-    # To record the evolution of the agents' policies over time
+
     history_agent1 = []
     history_agent2 = []
     
     for n in range(1, num_iters + 1):
-        # Example learning rate schedule: decays slowly over time.
+        # learning rate
         lr = (n + 100) ** (-0.9)
 
-        
-        # Each agent selects an action and obtains its current policy distribution
+        # Tried to replicate the paper's results more
+        # Decaying tau 
+        # tau = 0.1 * np.exp(-0.000002 * n)  # Exponential decay
+
+        # agent1.tau = tau
+        # agent2.tau = tau
+
         action1, policy1 = agent1.select_action()
         action2, policy2 = agent2.select_action()
         
@@ -47,58 +53,25 @@ def simulate_game(num_iters=500000, tau=0.1):
         agent1.update(action1, reward1, lr, policy1)
         agent2.update(action2, reward2, lr, policy2)
         
-        # Record the policy probabilities for later analysis.
+
         history_agent1.append(agent1.get_policy().copy())
         history_agent2.append(agent2.get_policy().copy())
 
-        # Print probabilities every 1000 iterations for debugging
         if n % 100000 == 0:
             print(f"Iteration {n}: π^1(R)={policy1[0]:.3f}, π^1(S)={policy1[2]:.3f}, π^1(P)={policy1[1]:.3f}")
 
-    # Convert history to NumPy arrays for plotting
-    #history_agent1 = np.array(history_agent1)
-    
-    # Convert history to NumPy arrays for plotting
-    history_agent1 = np.array(history_agent1)
-    history_agent2 = np.array(history_agent2)
-    
-    # Plot evolution of policy for Agent 1
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(history_agent1[:, 0], label='Rock')
-    # plt.plot(history_agent1[:, 1], label='Paper')
-    # plt.plot(history_agent1[:, 2], label='Scissors')
-    # plt.xlabel('Iteration')
-    # plt.ylabel('Probability')
-    # plt.title('Evolution of Agent 1 Policy (Q-learning with Smooth Best Response)')
-    # plt.legend()
-    # plt.show()
-    
-    # # For completeness, you could also plot Agent 2's policy evolution.
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(history_agent2[:, 0], label='Rock')
-    # plt.plot(history_agent2[:, 1], label='Paper')
-    # plt.plot(history_agent2[:, 2], label='Scissors')
-    # plt.xlabel('Iteration')
-    # plt.ylabel('Probability')
-    # plt.title('Evolution of Agent 2 Policy (Q-learning with Smooth Best Response)')
-    # plt.legend()
-    # plt.show()
+    plotter = RPSPlotting(history_agent1, history_agent2)
 
-    # Scatter plot π^1(S) (y-axis) vs π^1(R) (x-axis)
-    plt.figure(figsize=(10, 6))
-    plt.scatter(history_agent1[:, 0], history_agent1[:, 2], alpha=0.3, s=1)
-    plt.xlabel(r'$\pi^1(R)$')
-    plt.ylabel(r'$\pi^1(S)$')
-    plt.title('Strategy Evolution of Player 1 in Rock-Paper-Scissors')
-    plt.show()
+    # Plot the evolution of agent 1's policy
+    plotter.plot_policy_evolution(agent=1)
 
-    # Plot omitting first 10,000 iterations
-    plt.figure(figsize=(10, 6))
-    plt.scatter(history_agent1[10000:, 0], history_agent1[10000:, 2], alpha=0.3, s=1)
-    plt.xlabel(r'$\pi^1(R)$')
-    plt.ylabel(r'$\pi^1(S)$')
-    plt.title('Strategy Evolution (Ignoring First 10,000 Iterations)')
-    plt.show()
+    # Scatter plot of strategy evolution
+    plotter.scatter_strategy_evolution(omit_first=10000)
+
+    # Sampled evolution plot
+    plotter.plot_sampled_evolution(step=5000)
+    
+
 
 if __name__ == "__main__":
     simulate_game(num_iters=500000, tau=0.1)

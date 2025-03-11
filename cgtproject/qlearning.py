@@ -9,7 +9,8 @@ class QLearningAgent:
         """
         self.n_actions = n_actions
         self.tau = tau
-        self.Q = np.zeros(n_actions, dtype=float)
+        # self.Q = np.zeros(n_actions, dtype=float)
+        self.Q = np.full(n_actions, init_Q, dtype=float)
     
     def get_policy(self):
         """
@@ -30,11 +31,11 @@ class QLearningAgent:
         action = np.random.choice(self.n_actions, p=policy)
         return action, policy
     
-    def update(self, action, reward, lr, policy, epsilon=1e-8):
+    def update(self, action, reward, lr, policy):
         """
         Update the Q-value for the selected action.
         The update rule is:
             Q(a) = Q(a) + lr * (reward - Q(a)) / π(a)
         where π(a) is the probability of the chosen action.
         """
-        self.Q[action] += lr * (reward - self.Q[action]) / (policy[action] + epsilon)
+        self.Q[action] += lr * (reward - self.Q[action]) / (policy[action])
