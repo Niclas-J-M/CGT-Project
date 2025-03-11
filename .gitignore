@@ -1,0 +1,15 @@
+# Ignore Python cache and environment files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Poetry lock file (optional)
+poetry.lock
+
+# Environment variables
+.env
+
+# Ignore VS Code and PyCharm settings
+.vscode/
+.idea/
