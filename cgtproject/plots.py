@@ -27,21 +27,26 @@ class RPSPlotting:
         plt.ylabel('Probability')
         plt.title(f'Evolution of Agent {agent} Policy (Q-learning with Smooth Best Response)')
         plt.legend()
-        plt.show()
+        plt.savefig("Plots/plot_policy_evolution.png")
+        plt.close()
+        #Change back to SVG later
 
-    def scatter_strategy_evolution(self, omit_first=0):
+    def scatter_strategy_evolution(self, omit_first=10000, step=5000):
         """
         Plots a scatter plot of π^1(S) (y-axis) vs π^1(R) (x-axis).
         
         :param omit_first: Number of initial iterations to omit from the plot.
         """
-        history = self.history_agent1[omit_first:]
         plt.figure(figsize=(10, 6))
-        plt.scatter(history[:, 0], history[:, 2], alpha=0.3, s=1)
+        plt.plot(self.history_agent1[omit_first::step, 0], self.history_agent1[omit_first::step, 2], marker='o', linestyle='-', markersize=0)
         plt.xlabel(r'$\pi^1(R)$')
         plt.ylabel(r'$\pi^1(S)$')
+        plt.ylim(0, 1)
+        plt.xlim(0, 1)
         plt.title(f'Strategy Evolution of Player 1 (Omitting First {omit_first} Iterations)')
-        plt.show()
+        plt.savefig("Plots/strategy_evolution.png")
+        plt.close()
+        # Change back to SVG later 
 
     def plot_sampled_evolution(self, step=5000):
         """
@@ -53,5 +58,9 @@ class RPSPlotting:
         plt.plot(self.history_agent1[::step, 0], self.history_agent1[::step, 2], marker='o', linestyle='-', markersize=0)
         plt.xlabel(r'$\pi^1(R)$')
         plt.ylabel(r'$\pi^1(S)$')
+        plt.ylim(0, 1)
+        plt.xlim(0, 1)
         plt.title(f'Strategy Evolution of Player 1 (Every {step} Iterations)')
-        plt.show()
+        plt.savefig("Plots/sampled_evolution.png")
+        plt.close
+        #Change back to SVG later
