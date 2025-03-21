@@ -1,7 +1,9 @@
 import numpy as np
 import random
 import torch
-from udrl import RockPaperScissorsEnv, UDRLPolicy, collect_trajectory, train_udrl_policy, generate_training_data, infer_action
+from udrl import train_udrl_policy, UDRLPolicy
+from RPS_env import RockPaperScissorsEnv
+from utils import infer_action, generate_training_data, collect_trajectory
 
 def main():
     # Set random seeds for reproducibility.
