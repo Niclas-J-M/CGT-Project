@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 import random
 
-# --- Environment definition: Rock-Paper-Scissors ---
+# Rock-Paper-Scissors 
 class RockPaperScissorsEnv:
     def __init__(self):
         # Payoff matrix: rows = agent action, columns = opponent action
