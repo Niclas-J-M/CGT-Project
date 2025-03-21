@@ -3,20 +3,21 @@ import torch
 import numpy as np
 
 # Data Collection (Trajectory Logging)
-def collect_trajectory(env, T, exploration_rate=0.1):
+def collect_trajectory(env, T, exploration_rate=0.1, action_space=None):
     """
     Run the environment for T rounds and collect experiences.
     Each experience is a tuple: (state, action, reward, next_state)
+    
+    action_space: list or iterable of valid actions (e.g. [0,1,2] for RPS)
     """
+    if action_space is None:
+        raise ValueError("An action space must be provided.")
+    
     trajectory = []
     state = env.reset()
     for t in range(T):
-        # Here we use random exploration.
-        if random.random() < exploration_rate:
-            action = random.choice([0, 1, 2])
-        else:
-            # For initial data collection, we default to random actions.
-            action = random.choice([0, 1, 2])
+        # For initial data collection, choose a random action from the provided action_space.
+        action = random.choice(action_space)
         next_state, reward, _ = env.step(action)
         trajectory.append((state, action, reward, next_state))
         state = next_state
