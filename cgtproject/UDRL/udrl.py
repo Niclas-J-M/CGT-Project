@@ -69,7 +69,20 @@ def train_udrl_policy(policy_net, training_data, num_epochs=10, batch_size=64, l
             loss.backward()
             optimizer.step()
             epoch_loss += loss.item()
-        print(f"Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss / (dataset_size/batch_size):.4f}")
+        # print(f"Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss / (dataset_size/batch_size):.4f}")
 
 
-
+# Inference using the Learned UDRL Policy
+def infer_action(policy_net, state, desired_reward, horizon):
+    """
+    Given the current state and a command (desired_reward, horizon),
+    produce a probability distribution over actions and sample one.
+    """
+    state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0)  # shape: (1, state_dim)
+    desired_reward_tensor = torch.tensor([[desired_reward]], dtype=torch.float32)
+    horizon_tensor = torch.tensor([[horizon]], dtype=torch.float32)
+    with torch.no_grad():
+        logits = policy_net(state_tensor, desired_reward_tensor, horizon_tensor)
+        probs = torch.softmax(logits, dim=1).numpy().flatten()
+    action = np.random.choice(len(probs), p=probs)
+    return action, probs

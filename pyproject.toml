@@ -9,6 +9,12 @@ readme = "README.md"
 python = "^3.12"
 matplotlib = "^3.10.1"
 numpy = "^2.2.3"
+gymnasium = "^1.1.1"
+gym = "^0.26.2"
+pandas = "^2.2.3"
+torch = "^2.6.0"
+stable-baselines3 = "^2.5.0"
+tqdm = "^4.67.1"
 
 
 [build-system]
